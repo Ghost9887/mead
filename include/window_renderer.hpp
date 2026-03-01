@@ -1,0 +1,16 @@
+#ifndef WINDOW_RENDERER_HPP
+#define WINDOW_RENDERER_HPP
+
+#include "common.hpp"
+
+class RendererWindow {
+public: 
+    RendererWindow();
+    SDL_Renderer* GetRenderer();
+    void close();
+private:
+    SDL_Window *window;
+    SDL_Renderer *renderer;
+};
+
+#endif
