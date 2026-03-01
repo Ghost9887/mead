@@ -24,7 +24,7 @@ void Engine::run(RendererWindow *window) {
             if (event.type == SDL_QUIT) {
                 running = false;
             }
-            else if (event.type == SDL_MOUSEMOTION) {
+            else if (event.type == SDL_MOUSEMOTION || event.type == SDL_MOUSEBUTTONDOWN) {
                 if (event.motion.state & SDL_BUTTON_LMASK) {
                     int x = event.motion.x;
                     int y = event.motion.y;
