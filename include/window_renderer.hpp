@@ -7,10 +7,12 @@ class RendererWindow {
 public: 
     RendererWindow();
     SDL_Renderer* GetRenderer();
+    SDL_Texture * GetCanvas();
     void close();
 private:
     SDL_Window *window;
     SDL_Renderer *renderer;
+    SDL_Texture *canvas;
 };
 
 #endif

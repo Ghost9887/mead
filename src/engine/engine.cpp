@@ -15,6 +15,7 @@ void Engine::run(RendererWindow *window) {
     Brush brush(Default, Circle, 20);
 
     SDL_Renderer *renderer = window->GetRenderer();
+    SDL_Texture *canvas = window->GetCanvas();
     SDL_Event event;
 
     bool running = true;
@@ -29,7 +30,9 @@ void Engine::run(RendererWindow *window) {
                     int y = event.motion.y;
                     switch (brush.shape) {
                         case Circle: 
+                            SDL_SetRenderTarget(renderer, canvas);
                             draw_circle(renderer, x, y, brush.size);
+                            SDL_SetRenderTarget(renderer, NULL);
                             break;
                         case Rectangle:
                             break;
@@ -40,6 +43,8 @@ void Engine::run(RendererWindow *window) {
             }
             
         }
+        SDL_RenderClear(renderer);
+        SDL_RenderCopy(renderer, canvas, NULL, NULL);
         SDL_RenderPresent(renderer);
     }
 }

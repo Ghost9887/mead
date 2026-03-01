@@ -1,9 +1,9 @@
 #include "window_renderer.hpp"
 
 RendererWindow::RendererWindow() :
-        window(NULL), renderer(NULL)
+        window(NULL), renderer(NULL), canvas(NULL)
 {
-
+  
     window = SDL_CreateWindow(
         "Mead", 
         SDL_WINDOWPOS_CENTERED, 
@@ -20,12 +20,25 @@ RendererWindow::RendererWindow() :
         -1, 
         SDL_RENDERER_ACCELERATED
     );
+
     if (renderer == NULL)
         std::cout << "SDL could not create renderer!\n";
+
+    canvas = SDL_CreateTexture(
+        renderer,
+        SDL_PIXELFORMAT_RGBA8888,
+        SDL_TEXTUREACCESS_TARGET,
+        SCREEN_WIDTH,
+        SCREEN_HEIGHT
+    );
 }
 
 SDL_Renderer* RendererWindow::GetRenderer() {
     return renderer;
+}
+
+SDL_Texture * RendererWindow::GetCanvas() {
+  return canvas;
 }
 
 void RendererWindow::close() {
