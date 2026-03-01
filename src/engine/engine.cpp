@@ -11,15 +11,31 @@ void draw_circle(SDL_Renderer* renderer, int center_x, int center_y, int radius)
     }
 }
 
+void draw_ui(SDL_Renderer *renderer, std::vector<Button> *buttons) {
+    for (Button btn : *buttons) {
+        btn.draw_button(renderer);
+    }
+}
+
 void Engine::run(RendererWindow *window) {
     Brush brush(Default, Circle, 20);
 
-    SDL_Renderer *renderer = window->GetRenderer();
-    SDL_Texture *canvas = window->GetCanvas();
+    SDL_Renderer *renderer = window->get_renderer();
+    SDL_Texture *canvas = window->get_canvas();
     SDL_Event event;
+
+    std::vector<Button> buttons;
+    
+    Button test(50, 100, 100, 50, "Test");
+    buttons.push_back(test);
 
     bool running = true;
     while (running) {
+        SDL_SetRenderTarget(renderer, canvas);
+        SDL_SetRenderDrawColor(renderer, 50, 100, 255, 255);
+        draw_ui(renderer, &buttons);
+        SDL_SetRenderTarget(renderer, NULL);
+
         while (SDL_PollEvent(&event) != 0) {
             if (event.type == SDL_QUIT) {
                 running = false;

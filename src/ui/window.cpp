@@ -1,7 +1,7 @@
 #include "window_renderer.hpp"
 
 RendererWindow::RendererWindow() :
-        window(NULL), renderer(NULL), canvas(NULL)
+        window(nullptr), renderer(nullptr), canvas(nullptr)
 {
   
     window = SDL_CreateWindow(
@@ -12,7 +12,7 @@ RendererWindow::RendererWindow() :
         SCREEN_HEIGHT, 
         0
     );
-    if (window == NULL)
+    if (window == nullptr)
         std::cout << "SDL could not create  window!\n";
 
     renderer = SDL_CreateRenderer(
@@ -21,7 +21,7 @@ RendererWindow::RendererWindow() :
         SDL_RENDERER_ACCELERATED
     );
 
-    if (renderer == NULL)
+    if (renderer == nullptr)
         std::cout << "SDL could not create renderer!\n";
 
     canvas = SDL_CreateTexture(
@@ -33,18 +33,20 @@ RendererWindow::RendererWindow() :
     );
 }
 
-SDL_Renderer* RendererWindow::GetRenderer() {
+SDL_Renderer* RendererWindow::get_renderer() {
     return renderer;
 }
 
-SDL_Texture * RendererWindow::GetCanvas() {
+SDL_Texture * RendererWindow::get_canvas() {
   return canvas;
 }
 
 RendererWindow::~RendererWindow() {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
-    renderer = NULL;
-    window = NULL;
+    SDL_DestroyTexture(canvas);
+    renderer = nullptr;
+    window = nullptr;
+    canvas = nullptr;
     SDL_Quit();
 }

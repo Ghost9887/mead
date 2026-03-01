@@ -4,6 +4,7 @@
 #include "common.hpp"
 #include "window_renderer.hpp"
 #include "brush.hpp"
+#include "button.hpp"
 
 class Engine {
 public:
