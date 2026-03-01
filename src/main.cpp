@@ -4,10 +4,7 @@
 
 int main() {
     RendererWindow window;
-
     Engine engine;
     engine.run(&window);
-
-    window.close();
     return 0;
 }

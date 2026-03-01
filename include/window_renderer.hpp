@@ -6,6 +6,7 @@
 class RendererWindow {
 public: 
     RendererWindow();
+    ~RendererWindow();
     SDL_Renderer* GetRenderer();
     SDL_Texture * GetCanvas();
     void close();

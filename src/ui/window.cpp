@@ -41,11 +41,10 @@ SDL_Texture * RendererWindow::GetCanvas() {
   return canvas;
 }
 
-void RendererWindow::close() {
+RendererWindow::~RendererWindow() {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     renderer = NULL;
     window = NULL;
-
     SDL_Quit();
 }
