@@ -2,7 +2,10 @@ cmake_minimum_required(VERSION 3.10)
 project(mead)
 
 find_package(SDL2 REQUIRED)
+find_package(SDL2_ttf REQUIRED)
+
 include_directories(${SDL2_INCLUDE_DIRS})
+include_directories(${SDL2_TTF_INCLUDE_DIRS})
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
@@ -12,5 +15,8 @@ file(GLOB_RECURSE SOURCES
 
 add_executable(mead ${SOURCES})
 
-target_link_libraries(mead ${SDL2_LIBRARIES})
-
+target_link_libraries(mead
+    ${SDL2_LIBRARIES}
+    ${SDL2_TTF_LIBRARIES}
+    SDL2_ttf
+)

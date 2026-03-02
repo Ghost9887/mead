@@ -9,11 +9,13 @@ public:
     ~RendererWindow();
     SDL_Renderer *get_renderer();
     SDL_Texture *get_canvas();
+    TTF_Font *get_font();
     void close();
 private:
     SDL_Window *window;
     SDL_Renderer *renderer;
     SDL_Texture *canvas;
+    TTF_Font *font;
 };
 
 #endif

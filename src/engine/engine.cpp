@@ -16,6 +16,7 @@ void Engine::run(RendererWindow *window) {
 
     SDL_Renderer *renderer = window->get_renderer();
     SDL_Texture *canvas = window->get_canvas();
+    TTF_Font *font = window->get_font();
     SDL_SetRenderTarget(renderer, canvas);
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
@@ -24,7 +25,7 @@ void Engine::run(RendererWindow *window) {
     SDL_Event event;
 
     std::vector<Button> buttons;
-    Button test(50, 100, 100, 50, "Test");
+    Button test(50, 100, 100, 50, "Test", font);
     buttons.push_back(test);
 
     SDL_SetRenderTarget(renderer, canvas);

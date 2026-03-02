@@ -1,7 +1,7 @@
 #include "window_renderer.hpp"
 
 RendererWindow::RendererWindow() :
-        window(nullptr), renderer(nullptr), canvas(nullptr)
+        window(nullptr), renderer(nullptr), canvas(nullptr), font(nullptr)
 {
   
     window = SDL_CreateWindow(
@@ -31,14 +31,28 @@ RendererWindow::RendererWindow() :
         SCREEN_WIDTH,
         SCREEN_HEIGHT
     );
+    
+    if (TTF_Init() == -1) {
+        std::cout << "TTF_Init error: " << TTF_GetError() << std::endl;
+    }
+
+    font = TTF_OpenFont("../fonts/open_sans.ttf", 24);
+
+    if (!font) {
+        std::cout << "SDL could not find font!\n";
+    }
 }
 
-SDL_Renderer* RendererWindow::get_renderer() {
+SDL_Renderer *RendererWindow::get_renderer() {
     return renderer;
 }
 
-SDL_Texture * RendererWindow::get_canvas() {
+SDL_Texture *RendererWindow::get_canvas() {
   return canvas;
+}
+
+TTF_Font *RendererWindow::get_font() {
+    return font;
 }
 
 RendererWindow::~RendererWindow() {
