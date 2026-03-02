@@ -17,10 +17,11 @@ void Engine::run(RendererWindow *window) {
     SDL_Renderer *renderer = window->get_renderer();
     SDL_Texture *canvas = window->get_canvas();
     TTF_Font *font = window->get_font();
+
+    //make bg white
     SDL_SetRenderTarget(renderer, canvas);
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
-    SDL_SetRenderTarget(renderer, NULL);
 
     SDL_Event event;
 
@@ -28,7 +29,6 @@ void Engine::run(RendererWindow *window) {
     Button test(50, 100, 100, 50, "Test", font);
     buttons.push_back(test);
 
-    SDL_SetRenderTarget(renderer, canvas);
     draw_ui(buttons, renderer);
 
     bool running = true;
@@ -41,11 +41,9 @@ void Engine::run(RendererWindow *window) {
             }
             else if (event.type == SDL_MOUSEMOTION || event.type == SDL_MOUSEBUTTONDOWN) {
                 if (event.motion.state & SDL_BUTTON_LMASK) {
-                    int x = event.motion.x;
-                    int y = event.motion.y;
                     switch (brush.shape) {
                         case Circle: 
-                            draw_circle(renderer, x, y, brush.size);
+                            draw_circle(renderer, event.motion.x, event.motion.y, brush.size);
                             break;
                         case Rectangle:
                             break;
