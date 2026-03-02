@@ -14,4 +14,3 @@ void Button::press_button() {
 void Button::draw_button(SDL_Renderer *renderer) {
     SDL_RenderFillRect(renderer, &rect);
 }
-
