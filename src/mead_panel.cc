@@ -1,5 +1,5 @@
 #include "mead_panel.h"
-#include "mead.h"
+#include "mead_terminal.h"
 #include <vector>
 #include <unistd.h>
 #include <utility>
@@ -8,7 +8,16 @@ class Mead::Panel::Impl
 {
 public:
     Impl(Mead::XPercent xPercent, Mead::YPercent yPercent, Mead::Location location) :
-        mXPercent(xPercent), mYPercent(yPercent), mPosition(Mead::Position(location)) {}
+        mPosition(Mead::Position(location)) 
+    {
+        if (xPercent.p < 0) xPercent.p = 0;
+        else if (xPercent.p > 100) xPercent.p = 100;
+        if (yPercent.p < 0) yPercent.p = 0;
+        else if (yPercent.p > 100) yPercent.p = 100;
+
+        mXPercent = xPercent;
+        mYPercent = yPercent;
+    }
     ~Impl() = default;
 
     void Add(Mead::Component &component)
@@ -100,6 +109,16 @@ int Mead::Panel::GetX() const
 int Mead::Panel::GetY() const
 {
     return mImpl->mPosition.GetY();
+}
+
+std::pair<int, int> Mead::Panel::GetSize()
+{
+    return { GetWidth(), GetHeight() };
+}
+
+std::pair<int, int> Mead::Panel::GetPosition()
+{
+    return { GetX(), GetY() };
 }
 
 void Mead::Panel::Display(std::string &buffer)

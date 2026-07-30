@@ -1,6 +1,6 @@
 #include "mead_position.h"
 #include "mead_panel.h"
-#include "mead.h"
+#include "mead_terminal.h"
 #include <optional>
 #include <utility>
 

@@ -1,5 +1,5 @@
-#ifndef MEAD_H
-#define MEAD_H
+#ifndef MEAD_TERMINAL_H
+#define MEAD_TERMINAL_H
 
 #include <memory>
 #include <utility>

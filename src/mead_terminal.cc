@@ -1,4 +1,4 @@
-#include "mead.h"
+#include "mead_terminal.h"
 #include "mead_panel.h"
 #include <termios.h>
 #include <unistd.h>

@@ -6,6 +6,7 @@
 #include "mead_position.h"
 #include <memory>
 #include <string>
+#include <utility>
 
 namespace Mead 
 {
@@ -19,6 +20,8 @@ namespace Mead
         int GetHeight() const;
         int GetX() const;
         int GetY() const;
+        std::pair<int, int> GetSize();
+        std::pair<int, int> GetPosition();
         static Panel FullScreen();
         void Add(Mead::Component &component);
         void Display();
