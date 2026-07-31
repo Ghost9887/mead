@@ -5,6 +5,7 @@
 #include <sys/ioctl.h>
 #include <vector>
 #include <string>
+#include <signal.h>
 
 class Mead::Terminal::Impl 
 {
@@ -12,12 +13,19 @@ public:
     Impl() 
     {
         tcgetattr(STDIN_FILENO, &mOriginal);
+        signal(SIGWINCH, Mead::Terminal::Impl::HandleResize);
         mRaw = mOriginal;
         mRaw.c_lflag &= ~(ICANON | ISIG | IEXTEN | ECHO);
         mRaw.c_iflag &= ~(ICRNL | IXON | BRKINT | INPCK | ISTRIP);
+        mRaw.c_cc[VMIN] = 0;
+        mRaw.c_cc[VTIME] = 1;
         tcsetattr(STDIN_FILENO, TCSAFLUSH, &mRaw);
         write(STDOUT_FILENO, "\033[2J", 4);
         write(STDOUT_FILENO, "\033[H", 3);
+        struct winsize ws;
+        ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
+        mWidth = ws.ws_col;
+        mHeight = ws.ws_row;
     }
     ~Impl()
     {
@@ -26,12 +34,38 @@ public:
         write(STDOUT_FILENO, "\033[H", 3);
     }
 
-    std::pair<int, int> GetTerminalSize()
+    static void HandleResize(int)
+    {
+        Mead::Terminal::GetInstance().mImpl->mHasResized = true;
+    }
+
+    void ResizePanel(Mead::Panel *panel)
+    {
+        panel->ResetPosition();
+        for (Mead::IComponent* c : panel->GetComponents())
+        {
+            c->ResetPosition();
+            if (auto* a = dynamic_cast<Mead::Panel*>(c)) ResizePanel(a);
+        }
+    }
+
+    void ResizeContent()
     {
         struct winsize ws;
-        ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);       
+        ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
+        mWidth = ws.ws_col;
+        mHeight = ws.ws_row;
 
-        return { ws.ws_col, ws.ws_row };
+        for (auto* p : mPanels)
+        {
+            ResizePanel(p);
+        }
+        mHasResized = false;
+    }
+
+    std::pair<int, int> GetTerminalSize()
+    {
+        return { mWidth, mHeight };
     }
 
     char GetKey()
@@ -43,6 +77,10 @@ public:
 public:
     struct termios mOriginal;
     struct termios mRaw;
+    bool mHasResized { false };
+    int mWidth, mHeight;
+    std::string mScreenBuffer {};
+    std::string mAlternateBuffer {};
     std::vector<Mead::Panel*> mPanels {};
 };
 
@@ -55,6 +93,33 @@ Mead::Terminal& Mead::Terminal::GetInstance()
 {
     static Mead::Terminal instance;
     return instance;
+}
+
+void Mead::Terminal::AddPanel(Mead::Panel &panel)
+{
+    mImpl->mPanels.push_back(&panel);
+}
+
+void Mead::Terminal::Render(Mead::Panel &panel)
+{
+    if (mImpl->mHasResized) mImpl->ResizeContent();
+
+    panel.Display(mImpl->mAlternateBuffer, 0);
+
+    if (mImpl->mAlternateBuffer == mImpl->mScreenBuffer)
+    {
+        mImpl->mAlternateBuffer.clear();
+        return;
+    }
+
+    mImpl->mScreenBuffer = std::move(mImpl->mAlternateBuffer);
+
+    write(STDOUT_FILENO, "\x1b[?25l", 6);
+    write(STDOUT_FILENO, "\x1b[H", 3);
+    write(STDOUT_FILENO, "\x1b[2J", 4);
+    write(STDOUT_FILENO, mImpl->mScreenBuffer.c_str(),
+                          mImpl->mScreenBuffer.size());
+    write(STDOUT_FILENO, "\x1b[?25h", 6);
 }
 
 int Mead::Terminal::GetTerminalWidth()

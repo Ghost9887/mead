@@ -26,6 +26,7 @@ namespace Mead
         int GetY() const;
         std::pair<int, int> GetPosition() const;
         void CalculatePosition(int width, int height, const Mead::Panel *parent);
+        void ResetPosition();
     private:
         class Impl;
         std::unique_ptr<Impl> mImpl;

@@ -11,7 +11,7 @@ namespace Mead
 {
     class Panel;
 
-    class Text : public Mead::Component
+    class Text : public Mead::IComponent
     {
     public:
         Text(const std::string &text, const Mead::Location location);
@@ -24,7 +24,8 @@ namespace Mead
         int GetY() const;
     protected:
         void SetParent(Mead::Panel *parent) override;
-        void Display(std::string& buffer) override;
+        void Display(std::string& buffer, std::size_t id) override;
+        void ResetPosition() override;
     private:
         class Impl;
         std::unique_ptr<Impl> mImpl;

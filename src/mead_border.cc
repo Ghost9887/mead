@@ -1,6 +1,7 @@
 #include "mead_border.h"
 #include "mead_panel.h"
 #include <format>
+#include <unordered_map>
 
 class Mead::Border::Impl
 {
@@ -18,7 +19,7 @@ public:
     std::string mTopRight;
     std::string mBottomLeft;
     std::string mBottomRight;
-    Mead::Panel *mParent;
+    std::unordered_map<std::size_t, Mead::Panel*> mParents {};
 };
 
 Mead::Border::Border(std::string&& horizontal, std::string&& vertical, 
@@ -36,13 +37,15 @@ Mead::Border Mead::Border::Basic()
 
 void Mead::Border::SetParent(Mead::Panel *parent)
 {
-    mImpl->mParent = parent;
+    mImpl->mParents.insert({parent->GetId(), parent});
 }
 
-void Mead::Border::Display(std::string& buffer)
+void Mead::Border::Display(std::string& buffer, std::size_t id)
 {
-    auto[x, y] { mImpl->mParent->GetPosition() };
-    auto[width, height] { mImpl->mParent->GetSize() };
+    if (mImpl->mParents.find(id) == mImpl->mParents.end()) return;
+
+    auto[x, y] { mImpl->mParents[id]->GetPosition() };
+    auto[width, height] { mImpl->mParents[id]->GetSize() };
     
     for (std::size_t i {}; i < height; ++i)
     {
@@ -58,3 +61,5 @@ void Mead::Border::Display(std::string& buffer)
         }
     }
 }
+
+void Mead::Border::ResetPosition() {}

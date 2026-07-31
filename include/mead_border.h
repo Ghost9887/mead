@@ -10,7 +10,7 @@ namespace Mead
 {
     class Panel;
 
-    class Border : public Mead::Component
+    class Border : public Mead::IComponent
     {
     public:
         Border(std::string&& horizontal, std::string&& vertical, 
@@ -21,7 +21,8 @@ namespace Mead
         static Border Basic();
     protected:
         void SetParent(Mead::Panel *parent) override;
-        void Display(std::string& buffer) override;
+        void Display(std::string& buffer, std::size_t id) override;
+        void ResetPosition() override;
     private:
         class Impl;
         std::unique_ptr<Impl> mImpl;

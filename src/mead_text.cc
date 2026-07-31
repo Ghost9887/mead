@@ -1,5 +1,7 @@
 #include "mead_text.h"
+#include "mead_panel.h"
 #include <format>
+#include <unordered_map>
 
 class Mead::Text::Impl
 {
@@ -11,7 +13,7 @@ public:
 public:
     const std::string mText;
     Mead::Position mPosition;
-    Mead::Panel *mParent { nullptr };
+    std::unordered_map<std::size_t, Mead::Panel*> mParents {};
 };
 
 Mead::Text::Text(const std::string& text, const Mead::Location location) :
@@ -44,12 +46,14 @@ int Mead::Text::GetY() const
 
 void Mead::Text::SetParent(Mead::Panel *parent)
 {
-    mImpl->mParent = parent;
+    mImpl->mParents.insert({parent->GetId(), parent});
 }
 
-void Mead::Text::Display(std::string& buffer)
+void Mead::Text::Display(std::string& buffer, std::size_t id)
 {
-    mImpl->mPosition.CalculatePosition(mImpl->mText.size(), 0, mImpl->mParent);
+    if (mImpl->mParents.find(id) == mImpl->mParents.end()) return;
+
+    mImpl->mPosition.CalculatePosition(mImpl->mText.size(), 0, mImpl->mParents[id]);
     auto[x, y] = mImpl->mPosition.GetPosition();
     buffer += std::format("\x1b[{};{}H", y + 1, x + 1);
     for (char c : mImpl->mText)
@@ -57,4 +61,9 @@ void Mead::Text::Display(std::string& buffer)
         buffer += c; 
         buffer += std::format("\x1b[{};{}H", y + 1, ++x + 1);
     }
+}
+
+void Mead::Text::ResetPosition()
+{
+    mImpl->mPosition.ResetPosition();
 }

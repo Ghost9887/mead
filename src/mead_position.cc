@@ -28,6 +28,8 @@ Mead::Position::~Position() = default;
 
 void Mead::Position::CalculatePosition(int width, int height, const Mead::Panel *parent)
 {
+    if (mImpl->mPosition.has_value()) return;
+
     int baseX {};
     int baseY {};
     int parentWidth {};
@@ -113,16 +115,29 @@ void Mead::Position::CalculatePosition(int width, int height, const Mead::Panel 
 
 int Mead::Position::GetX() const
 {
-    return mImpl->mPosition.value().first;
+    if (mImpl->mPosition.has_value())
+    {
+        return mImpl->mPosition.value().first;
+    }
+    return 0;
 }
 
 int Mead::Position::GetY() const
 {
-    return mImpl->mPosition.value().second;
+    if (mImpl->mPosition.has_value())
+    {
+        return mImpl->mPosition.value().second;
+    }
+    return 0;
 }
 
 std::pair<int, int> Mead::Position::GetPosition() const
 {
     if (!mImpl->mPosition.has_value()) return { 0, 0 };
     return mImpl->mPosition.value();
+}
+
+void Mead::Position::ResetPosition()
+{
+    mImpl->mPosition = std::nullopt;
 }

@@ -7,15 +7,18 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 namespace Mead 
 {
-    class Panel : public Mead::Component
+    class Terminal;
+    class Panel : public Mead::IComponent
     {
     public:
-        Panel(Mead::XPercent x, Mead::YPercent y, Mead::Location location); 
+        Panel(Mead::WidthPercent widthPercent, Mead::HeightPercent heightPercent, Mead::Location location); 
         ~Panel();
         
+        std::size_t GetId() const;
         int GetWidth() const;
         int GetHeight() const;
         int GetX() const;
@@ -23,15 +26,19 @@ namespace Mead
         std::pair<int, int> GetSize();
         std::pair<int, int> GetPosition();
         static Panel FullScreen();
-        void Add(Mead::Component &component);
-        void Display();
+        void Add(Mead::IComponent &component);
+
+        friend class Mead::Terminal;
     protected:
+        std::vector<IComponent*>& GetComponents();
         void SetParent(Mead::Panel *parent) override;
-        void Display(std::string& buffer) override;
+        void Display(std::string& buffer, std::size_t id) override;
+        void ResetPosition() override;
     private:
         class Impl;
         std::unique_ptr<Impl> mImpl;
     };
+
 }
 
 #endif
