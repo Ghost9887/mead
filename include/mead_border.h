@@ -19,6 +19,8 @@ namespace Mead
         ~Border();
 
         static Border Basic();
+        static Border Round();
+        static Border Thick();
     protected:
         void SetParent(Mead::Panel *parent) override;
         void Display(std::string& buffer, std::size_t id) override;

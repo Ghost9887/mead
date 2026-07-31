@@ -14,8 +14,8 @@ namespace Mead
     class Text : public Mead::IComponent
     {
     public:
-        Text(const std::string &text, const Mead::Location location);
-        Text(const std::string &&text, const Mead::Location location);
+        Text(const std::string &text, const Mead::Allignment allignment);
+        Text(const std::string &&text, const Mead::Allignment allignment);
         ~Text();
 
         int GetWidth() const;

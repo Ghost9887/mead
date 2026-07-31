@@ -6,8 +6,8 @@
 class Mead::Text::Impl
 {
 public:
-    Impl(const std::string& text, const Mead::Location location) :
-        mText(text), mPosition(Mead::Position(location)) {}
+    Impl(const std::string& text, const Mead::Allignment allignment) :
+        mText(text), mPosition(Mead::Position(allignment)) {}
     ~Impl() = default;
 
 public:
@@ -16,11 +16,11 @@ public:
     std::unordered_map<std::size_t, Mead::Panel*> mParents {};
 };
 
-Mead::Text::Text(const std::string& text, const Mead::Location location) :
-    mImpl(std::make_unique<Impl>(text, location)) {}
+Mead::Text::Text(const std::string& text, const Mead::Allignment allignment) :
+    mImpl(std::make_unique<Impl>(text, allignment)) {}
 
-Mead::Text::Text(const std::string&& text, const Mead::Location location) :
-    mImpl(std::make_unique<Impl>(text, location)) {}
+Mead::Text::Text(const std::string&& text, const Mead::Allignment allignment) :
+    mImpl(std::make_unique<Impl>(text, allignment)) {}
 
 Mead::Text::~Text() = default;
 
@@ -53,7 +53,7 @@ void Mead::Text::Display(std::string& buffer, std::size_t id)
 {
     if (mImpl->mParents.find(id) == mImpl->mParents.end()) return;
 
-    mImpl->mPosition.CalculatePosition(mImpl->mText.size(), 0, mImpl->mParents[id]);
+    mImpl->mPosition.CalculateAllignmentPosition(mImpl->mText.size(), 0, mImpl->mParents[id]);
     auto[x, y] = mImpl->mPosition.GetPosition();
     buffer += std::format("\x1b[{};{}H", y + 1, x + 1);
     for (char c : mImpl->mText)

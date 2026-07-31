@@ -3,7 +3,8 @@
 
 namespace Mead
 {
-    struct WidthPercent { 
+    struct WidthPercent 
+    { 
         WidthPercent(int percent)
         {
             if (percent < 0) percent = 0;
@@ -14,7 +15,8 @@ namespace Mead
         double mWP; 
     };
     
-    struct HeightPercent { 
+    struct HeightPercent 
+    { 
         HeightPercent(int percent)
         {
             if (percent < 0) percent = 0;

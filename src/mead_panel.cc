@@ -7,9 +7,9 @@
 class Mead::Panel::Impl
 {
 public:
-    Impl(Mead::WidthPercent widthPercent, Mead::HeightPercent heightPercent, Mead::Location location) :
+    Impl(Mead::WidthPercent widthPercent, Mead::HeightPercent heightPercent, Mead::Anchor anchor) :
         mInstanceId(mGlobalId++), mWidthPercent(widthPercent), 
-        mHeightPercent(heightPercent), mPosition(Mead::Position(location)) {}
+        mHeightPercent(heightPercent), mPosition(Mead::Position(anchor)) {}
     ~Impl() = default;
     
     std::size_t GetId() const
@@ -36,19 +36,20 @@ public:
     Mead::HeightPercent mHeightPercent;
     int mWidth, mHeight;
     Mead::Position mPosition;
+    std::string mTitle {};
     std::vector<Mead::IComponent*> mComponents {};
     std::string mScreenBuffer {};
     std::unordered_map<std::size_t, Mead::Panel*> mParents {};
 };
 
-Mead::Panel::Panel(Mead::WidthPercent widthPercent, Mead::HeightPercent heightPercent, Mead::Location location) :
-    mImpl(std::make_unique<Mead::Panel::Impl>(widthPercent, heightPercent, location)) {}
+Mead::Panel::Panel(Mead::WidthPercent widthPercent, Mead::HeightPercent heightPercent, Mead::Anchor anchor) :
+    mImpl(std::make_unique<Mead::Panel::Impl>(widthPercent, heightPercent, anchor)) {}
 
 Mead::Panel::~Panel() = default;
 
 Mead::Panel Mead::Panel::FullScreen()
 {
-    return Mead::Panel(Mead::WidthPercent(100), Mead::HeightPercent(100), Mead::Location::TOP_LEFT);
+    return Mead::Panel(Mead::WidthPercent(100), Mead::HeightPercent(100), Mead::Anchor::TOP_LEFT);
 }
 
 void Mead::Panel::Add(Mead::IComponent &component)
@@ -107,7 +108,8 @@ void Mead::Panel::Display(std::string &buffer, std::size_t id)
     if (mImpl->mParents.find(id) == mImpl->mParents.end() && id != 0) return;
     
     mImpl->CalculateSize();
-    mImpl->mPosition.CalculatePosition(mImpl->mWidth, mImpl->mHeight, (id != 0) ? mImpl->mParents[id] : nullptr);
+    mImpl->mPosition.CalculateAnchorPosition(mImpl->mWidth, mImpl->mHeight, 
+            (id != 0) ? mImpl->mParents[id] : nullptr);
 
     for (auto* c : mImpl->mComponents)
     {

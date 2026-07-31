@@ -15,7 +15,7 @@ namespace Mead
     class Panel : public Mead::IComponent
     {
     public:
-        Panel(Mead::WidthPercent widthPercent, Mead::HeightPercent heightPercent, Mead::Location location); 
+        Panel(Mead::WidthPercent widthPercent, Mead::HeightPercent heightPercent, Mead::Anchor anchor); 
         ~Panel();
         
         std::size_t GetId() const;

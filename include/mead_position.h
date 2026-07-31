@@ -8,24 +8,36 @@ namespace Mead
 {
     class Panel;
 
-    enum class Location
+    enum class Anchor
     {
         TOP, RIGHT, BOTTOM, LEFT,
         TOP_LEFT, TOP_RIGHT, 
-        BOTTOM_LEFT, BOTTOM_RIGHT,
-        CENTER
+        BOTTOM_LEFT, BOTTOM_RIGHT, 
+        CENTER,
+    };
+
+    enum class Allignment
+    {
+        TOP, RIGHT, BOTTOM, LEFT,
+        TOP_LEFT, TOP_RIGHT, 
+        BOTTOM_LEFT, BOTTOM_RIGHT, 
+        CENTER,
+
+        TITLE_LEFT, TITLE_CENTER, TITLE_RIGHT
     };
 
     class Position
     {
     public:
-        Position(Location location);
+        Position(Mead::Anchor anchor);
+        Position(Mead::Allignment allignment);
         ~Position();
         
         int GetX() const;
         int GetY() const;
         std::pair<int, int> GetPosition() const;
-        void CalculatePosition(int width, int height, const Mead::Panel *parent);
+        void CalculateAnchorPosition(int width, int height, const Mead::Panel *parent);
+        void CalculateAllignmentPosition(int width, int height, const Mead::Panel *parent);
         void ResetPosition();
     private:
         class Impl;

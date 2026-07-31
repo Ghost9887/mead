@@ -35,6 +35,16 @@ Mead::Border Mead::Border::Basic()
     return Mead::Border("─", "│", "┌", "┐", "└", "┘");
 }
 
+Mead::Border Mead::Border::Round()
+{
+    return Mead::Border("─", "│", "╭", "╮", "╰", "╯");
+}
+
+Mead::Border Mead::Border::Thick()
+{
+    return Mead::Border("━", "┃", "┏", "┓", "┗", "┛");
+}
+
 void Mead::Border::SetParent(Mead::Panel *parent)
 {
     mImpl->mParents.insert({parent->GetId(), parent});
