@@ -104,7 +104,7 @@ void Mead::Terminal::Render(Mead::Panel &panel)
 {
     if (mImpl->mHasResized) mImpl->ResizeContent();
 
-    panel.Display(mImpl->mAlternateBuffer, 0);
+    panel.Display(mImpl->mAlternateBuffer);
 
     if (mImpl->mAlternateBuffer == mImpl->mScreenBuffer)
     {
@@ -120,6 +120,14 @@ void Mead::Terminal::Render(Mead::Panel &panel)
     write(STDOUT_FILENO, mImpl->mScreenBuffer.c_str(),
                           mImpl->mScreenBuffer.size());
     write(STDOUT_FILENO, "\x1b[?25h", 6);
+}
+
+void Mead::Terminal::RenderAll()
+{
+    for (auto* p : mImpl->mPanels)
+    {
+        Render(*p);
+    }
 }
 
 int Mead::Terminal::GetTerminalWidth()

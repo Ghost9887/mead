@@ -3,7 +3,6 @@
 
 #include "mead_component.h"
 #include "mead_utility.h"
-#include "mead_position.h"
 #include <memory>
 #include <string>
 #include <utility>
@@ -12,33 +11,35 @@
 namespace Mead 
 {
     class Terminal;
+    class Position;
+
     class Panel : public Mead::IComponent
     {
     public:
-        Panel(Mead::WidthPercent widthPercent, Mead::HeightPercent heightPercent, Mead::Anchor anchor); 
+        Panel(const Mead::WidthPercent widthPercent, 
+              const Mead::HeightPercent heightPercent, 
+              const Mead::Anchor anchor); 
         ~Panel();
-        
-        std::size_t GetId() const;
+
+        static Panel FullScreen();
         int GetWidth() const;
         int GetHeight() const;
         int GetX() const;
         int GetY() const;
-        std::pair<int, int> GetSize();
-        std::pair<int, int> GetPosition();
-        static Panel FullScreen();
+        std::pair<int, int> GetSize() const;
+        std::pair<int, int> GetPosition() const;
         void Add(Mead::IComponent &component);
 
         friend class Mead::Terminal;
     protected:
         std::vector<IComponent*>& GetComponents();
         void SetParent(Mead::Panel *parent) override;
-        void Display(std::string& buffer, std::size_t id) override;
+        void Display(std::string& buffer) override;
         void ResetPosition() override;
     private:
         class Impl;
         std::unique_ptr<Impl> mImpl;
     };
-
 }
 
 #endif

@@ -1,26 +1,26 @@
 #include "mead_text.h"
 #include "mead_panel.h"
+#include "mead_position.h"
+#include "mead_style.h"
 #include <format>
-#include <unordered_map>
+#include <optional>
 
 class Mead::Text::Impl
 {
 public:
-    Impl(const std::string& text, const Mead::Allignment allignment) :
-        mText(text), mPosition(Mead::Position(allignment)) {}
+    Impl(const std::string text, const Mead::Alignment alignment) :
+        mText(std::move(text)), mPosition(Mead::Position(alignment)) {}
     ~Impl() = default;
 
 public:
-    const std::string mText;
+    std::string mText;
     Mead::Position mPosition;
-    std::unordered_map<std::size_t, Mead::Panel*> mParents {};
+    Mead::Style mStyle;
+    Mead::Panel* mParent { nullptr };
 };
 
-Mead::Text::Text(const std::string& text, const Mead::Allignment allignment) :
-    mImpl(std::make_unique<Impl>(text, allignment)) {}
-
-Mead::Text::Text(const std::string&& text, const Mead::Allignment allignment) :
-    mImpl(std::make_unique<Impl>(text, allignment)) {}
+Mead::Text::Text(const std::string text, const Mead::Alignment alignment) :
+    mImpl(std::make_unique<Impl>(std::move(text), std::move(alignment))) {}
 
 Mead::Text::~Text() = default;
 
@@ -44,16 +44,34 @@ int Mead::Text::GetY() const
     return mImpl->mPosition.GetY();
 }
 
-void Mead::Text::SetParent(Mead::Panel *parent)
+Mead::Text& Mead::Text::SetForegroundColor(const Mead::RGB rgb)
 {
-    mImpl->mParents.insert({parent->GetId(), parent});
+    mImpl->mStyle.SetForegroundColor(std::move(rgb));
+    return *this;
 }
 
-void Mead::Text::Display(std::string& buffer, std::size_t id)
+Mead::Text& Mead::Text::SetBackgroundColor(const Mead::RGB rgb)
 {
-    if (mImpl->mParents.find(id) == mImpl->mParents.end()) return;
+    mImpl->mStyle.SetBackgroundColor(std::move(rgb));
+    return *this;
+}
 
-    mImpl->mPosition.CalculateAllignmentPosition(mImpl->mText.size(), 0, mImpl->mParents[id]);
+Mead::Text& Mead::Text::SetText(std::string text)
+{
+    mImpl->mText = std::move(text);
+    return *this;
+}
+
+void Mead::Text::SetParent(Mead::Panel* parent)
+{
+    mImpl->mParent = parent;
+}
+
+void Mead::Text::Display(std::string& buffer)
+{
+    mImpl->mStyle.StartStyle(buffer);
+
+    mImpl->mPosition.CalculatePosition(mImpl->mText.size(), 0, mImpl->mParent);
     auto[x, y] = mImpl->mPosition.GetPosition();
     buffer += std::format("\x1b[{};{}H", y + 1, x + 1);
     for (char c : mImpl->mText)
@@ -61,6 +79,8 @@ void Mead::Text::Display(std::string& buffer, std::size_t id)
         buffer += c; 
         buffer += std::format("\x1b[{};{}H", y + 1, ++x + 1);
     }
+
+    mImpl->mStyle.EndStyle(buffer);
 }
 
 void Mead::Text::ResetPosition()

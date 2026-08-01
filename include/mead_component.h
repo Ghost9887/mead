@@ -12,7 +12,7 @@ namespace Mead
     public:
         virtual ~IComponent() = default;
         virtual void SetParent(Mead::Panel *parent) = 0;
-        virtual void Display(std::string& buffer, std::size_t id) = 0;
+        virtual void Display(std::string& buffer) = 0;
         virtual void ResetPosition() = 0;
     };
 }

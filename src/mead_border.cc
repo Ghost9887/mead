@@ -1,16 +1,15 @@
 #include "mead_border.h"
 #include "mead_panel.h"
 #include <format>
-#include <unordered_map>
 
 class Mead::Border::Impl
 {
 public:
-    Impl(std::string& horizontal, std::string& vertical, 
-            std::string& topLeft, std::string& topRight, 
-            std::string& bottomLeft, std::string& bottomRight) :
-        mHorizontal(horizontal), mVertical(vertical), mTopLeft(topLeft),
-        mTopRight(topRight), mBottomLeft(bottomLeft), mBottomRight(bottomRight) {}
+    Impl(const std::string horizontal, const std::string vertical, 
+            const std::string topLeft, const std::string topRight, 
+            const std::string bottomLeft, const std::string bottomRight) :
+        mHorizontal(std::move(horizontal)), mVertical(std::move(vertical)), mTopLeft(std::move(topLeft)),
+        mTopRight(std::move(topRight)), mBottomLeft(std::move(bottomLeft)), mBottomRight(std::move(bottomRight)) {}
     ~Impl() = default;
 public:
     std::string mHorizontal;
@@ -19,14 +18,15 @@ public:
     std::string mTopRight;
     std::string mBottomLeft;
     std::string mBottomRight;
-    std::unordered_map<std::size_t, Mead::Panel*> mParents {};
+    Mead::Style mStyle {};
+    Mead::Panel* mParent { nullptr };
 };
 
-Mead::Border::Border(std::string&& horizontal, std::string&& vertical, 
-        std::string&& topRight, std::string&& topLeft, std::string&& bottomLeft,
-        std::string&& bottomRight) :
-    mImpl(std::make_unique<Mead::Border::Impl>(horizontal, vertical, topRight,
-                topLeft, bottomLeft, bottomRight)) {}
+Mead::Border::Border(const std::string horizontal, const std::string vertical, 
+        const std::string topRight, const std::string topLeft, const std::string bottomLeft,
+        const std::string bottomRight) :
+    mImpl(std::make_unique<Mead::Border::Impl>(std::move(horizontal), std::move(vertical), std::move(topRight),
+                std::move(topLeft), std::move(bottomLeft), std::move(bottomRight))) {}
 
 Mead::Border::~Border() = default;
 
@@ -45,17 +45,23 @@ Mead::Border Mead::Border::Thick()
     return Mead::Border("━", "┃", "┏", "┓", "┗", "┛");
 }
 
-void Mead::Border::SetParent(Mead::Panel *parent)
+Mead::Border& Mead::Border::SetColor(const Mead::RGB rgb)
 {
-    mImpl->mParents.insert({parent->GetId(), parent});
+    mImpl->mStyle.SetForegroundColor(std::move(rgb));
+    return *this;
 }
 
-void Mead::Border::Display(std::string& buffer, std::size_t id)
+void Mead::Border::SetParent(Mead::Panel *parent)
 {
-    if (mImpl->mParents.find(id) == mImpl->mParents.end()) return;
+    mImpl->mParent = parent;
+}
 
-    auto[x, y] { mImpl->mParents[id]->GetPosition() };
-    auto[width, height] { mImpl->mParents[id]->GetSize() };
+void Mead::Border::Display(std::string& buffer)
+{
+    mImpl->mStyle.StartStyle(buffer);
+
+    auto[x, y] { mImpl->mParent->GetPosition() };
+    auto[width, height] { mImpl->mParent->GetSize() };
     
     for (std::size_t i {}; i < height; ++i)
     {
@@ -70,6 +76,8 @@ void Mead::Border::Display(std::string& buffer, std::size_t id)
             else if (j == 0 || j == width - 1) buffer += mImpl->mVertical;
         }
     }
+
+    mImpl->mStyle.EndStyle(buffer);
 }
 
 void Mead::Border::ResetPosition() {}

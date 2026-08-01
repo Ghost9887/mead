@@ -3,8 +3,8 @@
 
 #include <memory>
 #include <string>
-#include "mead_border.h"
 #include "mead_component.h"
+#include "mead_style.h"
 
 namespace Mead
 {
@@ -13,17 +13,19 @@ namespace Mead
     class Border : public Mead::IComponent
     {
     public:
-        Border(std::string&& horizontal, std::string&& vertical, 
-            std::string&& topRight, std::string&& topLeft, std::string&& bottomLeft,
-            std::string&& bottomRight);
+        Border(const std::string horizontal, const std::string vertical, 
+            const std::string topRight, const std::string topLeft, const std::string bottomLeft,
+            const std::string bottomRight);
         ~Border();
 
         static Border Basic();
         static Border Round();
         static Border Thick();
+
+        Border& SetColor(const Mead::RGB rgb);
     protected:
         void SetParent(Mead::Panel *parent) override;
-        void Display(std::string& buffer, std::size_t id) override;
+        void Display(std::string& buffer) override;
         void ResetPosition() override;
     private:
         class Impl;

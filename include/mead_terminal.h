@@ -17,6 +17,7 @@ namespace Mead
         static Terminal& GetInstance();
         void AddPanel(Mead::Panel &panel);
         void Render(Mead::Panel &panel);
+        void RenderAll();
         int GetTerminalWidth();
         int GetTerminalHeight();
         std::pair<int, int> GetTerminalSize();
