@@ -7,8 +7,6 @@
 class Mead::Position::Impl
 {
 public:
-    Impl(Mead::Anchor anchor) :
-        mAnchor(anchor) {}
     Impl(Mead::Alignment allignment) :
         mAlignment(allignment) {}
     ~Impl() = default;
@@ -19,13 +17,9 @@ public:
     }
 
 public:
-    std::optional<Mead::Anchor> mAnchor { std::nullopt };
     std::optional<Mead::Alignment> mAlignment { std::nullopt };
     std::optional<std::pair<int, int>> mPosition { std::nullopt };
 };
-
-Mead::Position::Position(Mead::Anchor anchor) :
-    mImpl(std::make_unique<Mead::Position::Impl>(anchor)) {}
 
 Mead::Position::Position(Mead::Alignment allignment) :
     mImpl(std::make_unique<Mead::Position::Impl>(allignment)) {}
@@ -60,48 +54,72 @@ void Mead::Position::CalculatePosition(const int width, const int height, const 
         switch (mImpl->mAlignment.value())
         {
         case Mead::Alignment::TOP:
+            if (parent) baseY += 1; 
             mImpl->SetPosition({
                 baseX + (parentWidth - width) / 2,
-                baseY + 1
+                baseY
             });
             break;
         case Mead::Alignment::RIGHT:
+            if (parent) baseX -= 1;
             mImpl->SetPosition({
-                baseX + (parentWidth - width) - 1,
+                baseX + (parentWidth - width),
                 baseY + (parentHeight - height) / 2
             });
             break;
         case Mead::Alignment::BOTTOM:
+            if (parent) baseY -= 1;
             mImpl->SetPosition({
                 baseX + (parentWidth - width) / 2,
-                baseY + parentHeight - height - 1
+                baseY + parentHeight - height
             });
             break;
         case Mead::Alignment::LEFT:
+            if (parent) baseX += 1;
             mImpl->SetPosition({
-                baseX + 1,
+                baseX,
                 baseY + (parentHeight - height) / 2
             });
             break;
         case Mead::Alignment::TOP_LEFT:
-            mImpl->SetPosition({ baseX + 1, baseY + 1});
+            if (parent)
+            {
+                baseX += 1;
+                baseY += 1;
+            }
+            mImpl->SetPosition({ baseX, baseY});
             break;
         case Mead::Alignment::TOP_RIGHT:
+            if (parent)
+            {
+                baseX -= 1;
+                baseY += 1;
+            }
             mImpl->SetPosition({
-                baseX + (parentWidth - width) - 1,
-                baseY + 1
+                baseX + (parentWidth - width),
+                baseY
             });
             break;
         case Mead::Alignment::BOTTOM_LEFT:
+            if (parent)
+            {
+                baseX += 1;
+                baseY -= 1;
+            }
             mImpl->SetPosition({
-                baseX + 1,
-                baseY + parentHeight - height - 1
+                baseX,
+                baseY + parentHeight - height
             });
             break;
         case Mead::Alignment::BOTTOM_RIGHT:
+            if (parent)
+            {
+                baseX -= 1;
+                baseY -= 1;
+            }
             mImpl->SetPosition({
-                baseX + (parentWidth - width) - 1,
-                baseY + parentHeight - height - 1
+                baseX + (parentWidth - width),
+                baseY + parentHeight - height
             });
             break;
         case Mead::Alignment::CENTER:
@@ -127,65 +145,7 @@ void Mead::Position::CalculatePosition(const int width, const int height, const 
             break;
         }
     }
-    else
-    {
-        switch (mImpl->mAnchor.value())
-        {
-        case Mead::Anchor::TOP:
-            mImpl->SetPosition({
-                baseX + (parentWidth - width) / 2,
-                baseY
-            });
-            break;
-        case Mead::Anchor::RIGHT:
-            mImpl->SetPosition({
-                baseX + (parentWidth - width),
-                baseY + (parentHeight - height) / 2
-            });
-            break;
-        case Mead::Anchor::BOTTOM:
-            mImpl->SetPosition({
-                baseX + (parentWidth - width) / 2,
-                baseY + parentHeight - height
-            });
-            break;
-        case Mead::Anchor::LEFT:
-            mImpl->SetPosition({
-                baseX,
-                baseY + (parentHeight - height) / 2
-            });
-            break;
-        case Mead::Anchor::TOP_LEFT:
-            mImpl->SetPosition({ baseX, baseY});
-            break;
-        case Mead::Anchor::TOP_RIGHT:
-            mImpl->SetPosition({
-                baseX + (parentWidth - width),
-                baseY
-            });
-            break;
-        case Mead::Anchor::BOTTOM_LEFT:
-            mImpl->SetPosition({
-                baseX,
-                baseY + parentHeight - height
-            });
-            break;
-        case Mead::Anchor::BOTTOM_RIGHT:
-            mImpl->SetPosition({
-                baseX + (parentWidth - width),
-                baseY + parentHeight - height
-            });
-            break;
-        case Mead::Anchor::CENTER:
-            mImpl->SetPosition({
-                baseX + (parentWidth  - width)  / 2,
-                baseY + (parentHeight - height) / 2
-            });
-            break;
-        }
-    }
-    
-}
+} 
 
 int Mead::Position::GetX() const
 {

@@ -7,8 +7,8 @@
 class Mead::Panel::Impl
 {
 public:
-    Impl(const Mead::WidthPercent widthPercent, const Mead::HeightPercent heightPercent, const Mead::Anchor anchor) :
-        mWidthPercent(std::move(widthPercent)), mHeightPercent(std::move(heightPercent)), mPosition(Mead::Position(anchor)) {}
+    Impl(const Mead::WidthPercent widthPercent, const Mead::HeightPercent heightPercent, const Mead::Alignment alignment) :
+        mWidthPercent(std::move(widthPercent)), mHeightPercent(std::move(heightPercent)), mPosition(Mead::Position(alignment)) {}
     ~Impl() = default;
     
     void Add(Mead::IComponent &component)
@@ -19,9 +19,16 @@ public:
     
     void CalculateSize()
     {
-        auto[width, height] = Mead::Terminal::GetInstance().GetTerminalSize();
-        mWidth = width  * mWidthPercent.mWP;
-        mHeight = height * mHeightPercent.mHP;
+        std::pair<int, int> size { Mead::Terminal::GetInstance().GetTerminalSize() };
+        if (mParent)
+        {
+            //we want the panel to be in the parent panel so we dont include the edges
+            size.first = mParent->GetWidth() - 2;
+            size.second = mParent->GetHeight() - 2;
+        }
+
+        mWidth = size.first * mWidthPercent.mWP;
+        mHeight = size.second * mHeightPercent.mHP;
     }
     
     void Clear(std::string &buffer)
@@ -36,11 +43,10 @@ public:
             buffer += blankRow;
         }
     }
-
 public:
     const Mead::WidthPercent mWidthPercent;
     const Mead::HeightPercent mHeightPercent;
-    int mWidth, mHeight;
+    int mWidth, mHeight, mInnerWidth, mInnerHeight;
     Mead::Position mPosition;
     std::vector<Mead::IComponent*> mComponents {};
     std::string mScreenBuffer {};
@@ -48,20 +54,21 @@ public:
 };
 
 Mead::Panel::Panel(const Mead::WidthPercent widthPercent, 
-        const Mead::HeightPercent heightPercent, const Mead::Anchor anchor) :
-    mImpl(std::make_unique<Mead::Panel::Impl>(std::move(widthPercent), std::move(heightPercent), std::move(anchor))) {}
+        const Mead::HeightPercent heightPercent, const Mead::Alignment alignment) :
+    mImpl(std::make_unique<Mead::Panel::Impl>(std::move(widthPercent), std::move(heightPercent), std::move(alignment))) {}
 
 Mead::Panel::~Panel() = default;
 
 Mead::Panel Mead::Panel::FullScreen()
 {
-    return Mead::Panel(Mead::WidthPercent(100), Mead::HeightPercent(100), Mead::Anchor::TOP_LEFT);
+    return Mead::Panel(Mead::WidthPercent(100), Mead::HeightPercent(100), Mead::Alignment::TOP_LEFT);
 }
 
-void Mead::Panel::Add(Mead::IComponent &component)
+Mead::Panel& Mead::Panel::Add(Mead::IComponent &component)
 {
     mImpl->Add(component);
     component.SetParent(this);
+    return *this;
 }
 
 int Mead::Panel::GetWidth() const
@@ -110,7 +117,7 @@ void Mead::Panel::Display(std::string &buffer)
     mImpl->Clear(buffer);
 
     mImpl->CalculateSize();
-    mImpl->mPosition.CalculatePosition(mImpl->mWidth, mImpl->mHeight, nullptr);
+    mImpl->mPosition.CalculatePosition(mImpl->mWidth, mImpl->mHeight, mImpl->mParent);
 
     for (auto* c : mImpl->mComponents)
     {

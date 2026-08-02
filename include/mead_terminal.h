@@ -15,7 +15,7 @@ namespace Mead
         Terminal& operator=(const Terminal&) = delete;
 
         static Terminal& GetInstance();
-        void AddPanel(Mead::Panel &panel);
+        Terminal& Attach(Mead::Panel &panel);
         void Render(Mead::Panel &panel);
         void RenderAll();
         int GetTerminalWidth();

@@ -18,7 +18,7 @@ namespace Mead
     public:
         Panel(const Mead::WidthPercent widthPercent, 
               const Mead::HeightPercent heightPercent, 
-              const Mead::Anchor anchor); 
+              const Mead::Alignment alignment); 
         ~Panel();
 
         static Panel FullScreen();
@@ -28,7 +28,7 @@ namespace Mead
         int GetY() const;
         std::pair<int, int> GetSize() const;
         std::pair<int, int> GetPosition() const;
-        void Add(Mead::IComponent &component);
+        Panel& Add(Mead::IComponent &component);
 
         friend class Mead::Terminal;
     protected:

@@ -95,9 +95,10 @@ Mead::Terminal& Mead::Terminal::GetInstance()
     return instance;
 }
 
-void Mead::Terminal::AddPanel(Mead::Panel &panel)
+Mead::Terminal& Mead::Terminal::Attach(Mead::Panel &panel)
 {
     mImpl->mPanels.push_back(&panel);
+    return Mead::Terminal::GetInstance();
 }
 
 void Mead::Terminal::Render(Mead::Panel &panel)

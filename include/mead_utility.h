@@ -24,14 +24,6 @@ namespace Mead
         double mHP; 
     };
 
-    enum class Anchor
-    {
-        TOP, RIGHT, BOTTOM, LEFT,
-        TOP_LEFT, TOP_RIGHT, 
-        BOTTOM_LEFT, BOTTOM_RIGHT, 
-        CENTER,
-    };
-
     enum class Alignment
     {
         TOP, RIGHT, BOTTOM, LEFT,

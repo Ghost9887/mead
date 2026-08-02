@@ -12,7 +12,6 @@ namespace Mead
     class Position
     {
     public:
-        Position(Mead::Anchor anchor);
         Position(Mead::Alignment alignment);
         ~Position();
         
